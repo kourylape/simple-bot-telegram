@@ -18,13 +18,14 @@ If you haven't created a [Telegram](https://telegram.org/) account yet, go ahead
 
 It's up to you how you want to create your Heroku app - either on the web, or via the [CLI](https://devcenter.heroku.com/articles/creating-apps). You can also intergrate [Heroku with GitHub](https://devcenter.heroku.com/articles/github-integration) to automcatically deploy.
 
-The only thing that you'll need to do is create [config vars](https://devcenter.heroku.com/articles/config-vars) for the auth token and secret.
+You'll need to do is create [config vars](https://devcenter.heroku.com/articles/config-vars) for the auth token and secret. You will also need to add [Redis](https://devcenter.heroku.com/articles/heroku-redis) as an add-on.
 
 If using the CLI:
 
 ```bash
 heroku config:set AUTH=110201543:AAHdqTcvCH1vGWJxfSeofSAs0K5PALDsaw
 heroku config:set SECRET=A1B2C3D4E5
+heroku addons:create heroku-redis:hobby-dev -a your-app-name
 ```
 
 Once the config variables are setup, you can then deploy the appliation to Heroku.

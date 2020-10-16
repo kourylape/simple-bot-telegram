@@ -1,20 +1,30 @@
-const express = require('express')
-const path = require('path')
-const bodyParser = require('body-parser')
-const got = require('got')
-const app = express()
-
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
 }
 
+const express = require('express')
+const path = require('path')
+const bodyParser = require('body-parser')
+const app = express()
+const messageQueue = require('./workers/messageQueue')
 const secret = process.env.SECRET || 'A1B2C3D4'
+
+const fromNow = (minutes) => {
+  let unix = Date.now()
+  const delay = parseInt(minutes)
+
+  if (!isNaN(delay) && delay >= 0) {
+    unix += (delay * 60000)
+  }
+
+  return unix
+}
 
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
-app.get('/', (req, res) => res.json({ version: '1.0.1' }))
+app.get('/', (req, res) => res.json({ version: '1.0.2' }))
 
 app.post(`/${secret}`, async (req, res) => {
   try {
@@ -34,30 +44,17 @@ app.post(`/${secret}`, async (req, res) => {
 
 app.post(`/${secret}/:chat_id`, async (req, res) => {
   try {
-    console.log(req.params)
-    const chat_id = req.params.chat_id
-    const message = req.body.message
-
-    if (message) {
-      await sendMessage(chat_id, message)
+    const sendAt = fromNow(req.body.delay || 0)
+    const params = {
+      chatId: req.params.chat_id || '',
+      message: req.body.message || ''
     }
+    await messageQueue.createJob(params).delayUntil(sendAt).save()
 
-    res.send({ success: true })
+    res.send({ success: true, willBeSent: new Date(sendAt).toISOString() })
   } catch (error) {
     res.json({ success: false, error: error.message })
   }
 })
-
-const sendMessage = async (chat_id = null, message = '') => {
-  const auth = process.env.AUTH || 'ABC123'
-  const url = `https://api.telegram.org/bot${auth}/sendMessage`
-
-  await got.post(url, {
-    json: {
-      chat_id: chat_id,
-      text: message
-    }
-  })
-}
 
 app.listen(process.env.PORT || 5000, () => console.log('Server Listening'))

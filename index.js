@@ -6,6 +6,7 @@ const express = require('express')
 const path = require('path')
 const bodyParser = require('body-parser')
 const app = express()
+const cors = require('cors')
 const messageQueue = require('./workers/messageQueue')
 const secret = process.env.SECRET || 'A1B2C3D4'
 
@@ -20,6 +21,7 @@ const fromNow = (minutes) => {
   return unix
 }
 
+app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())

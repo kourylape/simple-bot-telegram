@@ -56,7 +56,7 @@ To send a message you just need your `chat_id`.
 
 ```bash
 curl --request POST \
-  --url https://<YOUR_HEROKU_APP_ID>.herokuapp.com/send/<CHAT_ID> \
+  --url https://<YOUR_HEROKU_APP_ID>.herokuapp.com/<YOUR_SECRET>/<CHAT_ID> \
   --header 'content-type: application/json' \
   --data '{ "message": "<YOUR_MESSAGE_TEXT>" }'
 ```

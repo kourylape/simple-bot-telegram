@@ -1,6 +1,6 @@
 {
   "name": "simple-bot-telegram",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "This app sends messages and thus push notifications over Telegram.",
   "main": "index.js",
   "scripts": {
@@ -27,6 +27,6 @@
     "body-parser": "^1.19.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "got": "^10.7.0"
+    "got": "^11.7.0"
   }
 }

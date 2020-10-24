@@ -33,8 +33,11 @@ app.post(`/${secret}`, async (req, res) => {
     const message = req.body.message
     if (message.text === '/chat') {
       if (message.chat.type === 'private') {
-        const chat_id = message.chat.id
-        await sendMessage(chat_id, `Your Chat ID # is: ${chat_id}`)
+        const chatId = message.chat.id
+        await messageQueue.createJob({
+          chatId: chatId,
+          message: `Your Chat ID # is: ${chatId}`
+        }).save()
       }
     }
     res.send({ success: true })

@@ -32,8 +32,7 @@ app.post(`/${secret}`, async (req, res) => {
   try {
     const message = req.body.message
     if (message.text === '/chat') {
-      console.log(message.chat.type)
-      if (message.chat.type === 'private') {
+      if (['private', 'group'].includes(message.chat.type)) {
         const chatId = message.chat.id
         await messageQueue.createJob({
           chatId: chatId,

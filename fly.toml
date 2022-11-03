@@ -1,10 +1,11 @@
-# fly.toml file generated for spndev on 2022-11-02T20:54:53-04:00
-
 app = "spndev"
 kill_signal = "SIGINT"
 kill_timeout = 5
 
 [env]
+
+[build]
+  builder = "heroku/buildpacks:20"
 
 [experimental]
   allowed_public_ports = []

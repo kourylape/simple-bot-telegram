@@ -2,8 +2,11 @@
   "name": "simple-bot-telegram",
   "version": "1.0.3",
   "description": "This app sends messages and thus push notifications over Telegram.",
-  "main": "index.js",
+  "enginers": ">=16",
+  "type": "module",
   "scripts": {
+    "start": "tsc && node dist/src/index.js",
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -24,12 +27,22 @@
   },
   "homepage": "https://github.com/ckylape/simple-bot-telegram#readme",
   "dependencies": {
+    "@types/redis": "^4.0.11",
     "bee-queue": "^1.4.0",
     "body-parser": "^1.20.1",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "got": "^12.5.2",
-    "redis": "^4.4.0"
+    "redis": "^4.4.0",
+    "tslib": "^2.4.1",
+    "typescript": "^4.8.4"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.14",
+    "@types/got": "^9.6.12",
+    "@types/node": "^18.11.9",
+    "ts-node": "^10.9.1"
   }
 }

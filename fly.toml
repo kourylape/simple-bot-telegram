@@ -15,7 +15,7 @@ kill_timeout = 5
   exec = []
 
 [processes]
-  app = "node index.js"
+  app = "npm run start"
 
 [[services]]
   http_checks = []

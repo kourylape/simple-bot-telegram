@@ -1,16 +1,16 @@
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config()
-}
+import dotenv from 'dotenv'
+import express from 'express'
+import * as path from 'path'
+import bodyParser from 'body-parser'
+import cors from 'cors'
+import messageQueue from './workers/messageQueue.js'
 
-const express = require('express')
-const path = require('path')
-const bodyParser = require('body-parser')
+dotenv.config()
 const app = express()
-const cors = require('cors')
-const messageQueue = require('./workers/messageQueue')
+
 const secret = process.env.SECRET || 'A1B2C3D4'
 
-const fromNow = (minutes) => {
+const fromNow = (minutes: any) => {
   let unix = Date.now()
   const delay = parseInt(minutes)
 
@@ -22,13 +22,13 @@ const fromNow = (minutes) => {
 }
 
 app.use(cors())
-app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.static(path.join('../public')))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
-app.get('/', (req, res) => res.json({ version: '1.0.2' }))
+app.get('/', (req: any, res: any) => res.json({ version: '1.0.2' }))
 
-app.post(`/${secret}`, async (req, res) => {
+app.post(`/${secret}`, async (req: any, res: any) => {
   try {
     const message = req.body.message
     if (message.text === '/chat') {
@@ -41,13 +41,13 @@ app.post(`/${secret}`, async (req, res) => {
       }
     }
     res.send({ success: true })
-  } catch (error) {
+  } catch (error: any) {
     console.error(error)
     res.json({ success: false, error: error.message })
   }
 })
 
-app.post(`/${secret}/:chat_id`, async (req, res) => {
+app.post(`/${secret}/:chat_id`, async (req: any, res: any) => {
   try {
     const sendAt = fromNow(req.body.delay || 0)
     const params = {
@@ -57,7 +57,7 @@ app.post(`/${secret}/:chat_id`, async (req, res) => {
     await messageQueue.createJob(params).delayUntil(sendAt).save()
 
     res.send({ success: true, willBeSent: new Date(sendAt).toISOString() })
-  } catch (error) {
+  } catch (error: any) {
     res.json({ success: false, error: error.message })
   }
 })

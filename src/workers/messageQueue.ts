@@ -1,11 +1,11 @@
-const Queue = require('bee-queue')
-const got = require('got')
-const redis = require('redis')
+import BeeQueue from 'bee-queue'
+import got from 'got'
+import redis from 'redis'
 
 // setup queue
-const messageQueue = new Queue('message', {
+const messageQueue = new BeeQueue('message', {
   prefix: 'sbt',
-  redis: redis.createClient(process.env.REDIS_URL || 'redis://127.0.0.1:6379'),
+  redis: redis.createClient({ url: process.env.REDIS_URL || 'redis://127.0.0.1:6379' }),
   sendEvents: false,
   removeOnSuccess: true,
   removeOnFailure: true,
@@ -21,7 +21,7 @@ messageQueue.on('failed', (job, error) => {
   console.error(error)
 })
 
-messageQueue.process(async (job, done) => {
+messageQueue.process(async (job: any, done: any) => {
   const auth = process.env.AUTH || 'ABC123'
   const url = `https://api.telegram.org/bot${auth}/sendMessage`
 
@@ -35,4 +35,4 @@ messageQueue.process(async (job, done) => {
   return done()
 })
 
-module.exports = messageQueue
+export default messageQueue

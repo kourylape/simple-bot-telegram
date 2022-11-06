@@ -3,41 +3,31 @@ import express from 'express'
 import * as path from 'path'
 import bodyParser from 'body-parser'
 import cors from 'cors'
-import messageQueue from './workers/messageQueue.js'
+import { MessageQueue } from './workers/messageQueue.js'
 
-dotenv.config()
+dotenv.config({ override: true })
 const app = express()
-
-const secret = process.env.SECRET || 'A1B2C3D4'
-
-const fromNow = (minutes: any) => {
-  let unix = Date.now()
-  const delay = parseInt(minutes)
-
-  if (!isNaN(delay) && delay >= 0) {
-    unix += (delay * 60000)
-  }
-
-  return unix
-}
+const secret = process.env.SECRET ?? 'A1B2C3D4'
 
 app.use(cors())
 app.use(express.static(path.join('../public')))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
-app.get('/', (req: any, res: any) => res.json({ version: '1.0.2' }))
+app.get('/', (req, res) => res.json({ version: '1.0.2' }))
 
-app.post(`/${secret}`, async (req: any, res: any) => {
+app.post(`/${secret}`, async (req, res) => {
   try {
     const message = req.body.message
+    console.log(message)
     if (message.text === '/chat') {
       if (['private', 'group'].includes(message.chat.type)) {
-        const chatId = message.chat.id
-        await messageQueue.createJob({
-          chatId: chatId,
-          message: `Your Chat ID # is: ${chatId}`
-        }).save()
+        const chatId: string = message.chat.id
+        await MessageQueue.push({
+          chatId,
+          message: `Your Chat ID # is: ${chatId}`,
+          delay: 0
+        })
       }
     }
     res.send({ success: true })
@@ -47,19 +37,22 @@ app.post(`/${secret}`, async (req: any, res: any) => {
   }
 })
 
-app.post(`/${secret}/:chat_id`, async (req: any, res: any) => {
+app.post(`/${secret}/:chat_id`, async (req, res) => {
   try {
-    const sendAt = fromNow(req.body.delay || 0)
-    const params = {
-      chatId: req.params.chat_id || '',
-      message: req.body.message || ''
+    const delay: number = req.body.delay ?? 1
+    const jobParams = {
+      chatId: req.params.chat_id ?? '',
+      message: req.body.message ?? '',
+      delay
     }
-    await messageQueue.createJob(params).delayUntil(sendAt).save()
+    console.log(jobParams)
+    await MessageQueue.push(jobParams)
 
-    res.send({ success: true, willBeSent: new Date(sendAt).toISOString() })
+    res.send({ success: true, message: `Your message will be sent in ${delay} seconds` })
   } catch (error: any) {
     res.json({ success: false, error: error.message })
   }
 })
 
-app.listen(process.env.PORT || 5000, () => console.log('Server Listening'))
+const port = process.env.PORT ?? 8080
+app.listen(port, () => console.log(`Server Listening on ${port}`))

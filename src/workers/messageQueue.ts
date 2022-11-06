@@ -21,5 +21,5 @@ async function messageQueue (args: Message): Promise<void> {
         text: args.message ?? ''
       }
     })
-  }, args.delay)
+  }, args.delay * 1000)
 }

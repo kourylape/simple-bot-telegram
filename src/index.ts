@@ -19,7 +19,6 @@ app.get('/', (req, res) => res.json({ version: '1.0.2' }))
 app.post(`/${secret}`, async (req, res) => {
   try {
     const message = req.body.message
-    console.log(message)
     if (message.text === '/chat') {
       if (['private', 'group'].includes(message.chat.type)) {
         const chatId: string = message.chat.id
@@ -39,13 +38,12 @@ app.post(`/${secret}`, async (req, res) => {
 
 app.post(`/${secret}/:chat_id`, async (req, res) => {
   try {
-    const delay: number = req.body.delay ?? 1
+    const delay: number = Number(req.body.delay) ?? 1
     const jobParams = {
       chatId: req.params.chat_id ?? '',
       message: req.body.message ?? '',
       delay
     }
-    console.log(jobParams)
     await MessageQueue.push(jobParams)
 
     res.send({ success: true, message: `Your message will be sent in ${delay} seconds` })

@@ -14,7 +14,7 @@ app.use(express.static(path.join('../public')))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
-app.get('/', (req, res) => res.json({ version: '1.0.2' }))
+app.get('/', (req, res) => res.json({ version: '2.0.0' }))
 
 app.post(`/${secret}`, async (req, res) => {
   try {
